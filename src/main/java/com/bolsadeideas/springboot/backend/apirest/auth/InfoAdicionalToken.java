@@ -15,23 +15,24 @@ import com.bolsadeideas.springboot.backend.apirest.models.services.IUsuarioServi
 
 @Component
 public class InfoAdicionalToken implements TokenEnhancer{
-
+	
 	@Autowired
 	private IUsuarioService usuarioService;
-	
+
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
 		
 		Usuario usuario = usuarioService.findByUsername(authentication.getName());
-		
 		Map<String, Object> info = new HashMap<>();
-		info.put("info_adicional", "Hola que tal!".concat(authentication.getName()));
-		info.put("nombre", usuario.getId()+": "+usuario.getNombre());
-		info.put("apellido", usuario.getId()+": "+usuario.getApellido());
-		info.put("email", usuario.getId()+": "+usuario.getEmail());
+		info.put("info_adicional", "Hola que tal!: ".concat(authentication.getName()));
+		
+		info.put("nombre", usuario.getNombre());
+		info.put("apellido", usuario.getApellido());
+		info.put("email", usuario.getEmail());
+		
 		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
 		
 		return accessToken;
 	}
-	
+
 }

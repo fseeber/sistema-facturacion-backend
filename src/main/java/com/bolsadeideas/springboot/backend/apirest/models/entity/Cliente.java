@@ -26,61 +26,49 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name="clientes")
+@Table(name = "clientes")
 public class Cliente implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotEmpty(message = "no puede estar vacio")
-	@Size(min=4, max=12, message = "no puede estar vacio")
-	@Column(nullable=false)
+	@Size(min = 4, max = 12, message = "el tamaño tiene que estar entre 4 y 12")
+	@Column(nullable = false)
 	private String nombre;
-	
+
 	@NotEmpty(message = "no puede estar vacio")
 	private String apellido;
-	
-	@Email
+
 	@NotEmpty(message = "no puede estar vacio")
-	@Column(nullable=false)
+	@Email(message = "no es una dirección de correo bien formada")
+	@Column(nullable = false, unique = true)
 	private String email;
-	
+
 	@NotNull(message = "no puede estar vacio")
-	@Column(name="create_at")
+	@Column(name = "create_at")
 	@Temporal(TemporalType.DATE)
 	private Date createAt;
 
 	private String foto;
-	
-	@NotNull(message = "no puede estar vacio")
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="region_id")
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
+	@NotNull(message = "la región no puede ser vacia")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "region_id")
+	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private Region region;
-	
+
+	@JsonIgnoreProperties(value={"cliente", "hibernateLazyInitializer", "handler"}, allowSetters=true)
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)
 	private List<Factura> facturas;
-		
+
 	public Cliente() {
 		this.facturas = new ArrayList<>();
 	}
 
 	public Long getId() {
 		return id;
-	}
-
-	public List<Factura> getFacturas() {
-		return facturas;
-	}
-
-	public void setFacturas(List<Factura> facturas) {
-		this.facturas = facturas;
 	}
 
 	public void setId(Long id) {
@@ -134,4 +122,14 @@ public class Cliente implements Serializable {
 	public void setRegion(Region region) {
 		this.region = region;
 	}
+
+	public List<Factura> getFacturas() {
+		return facturas;
+	}
+
+	public void setFacturas(List<Factura> facturas) {
+		this.facturas = facturas;
+	}
+
+	private static final long serialVersionUID = 1L;
 }
